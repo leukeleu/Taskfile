@@ -1,4 +1,3 @@
-PATH=./node_modules/.bin:$PATH
 #!/usr/bin/env bash
 
 function install {
