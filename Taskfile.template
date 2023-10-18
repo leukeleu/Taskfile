@@ -29,8 +29,8 @@ function _parallel() {
       $arg &
       PIDS+=($!)
   done
-  for pid in ${PIDS[*]}; do
-      wait $pid
+  for pid in "${PIDS[@]}"; do
+      wait "$pid"
   done
 }
 
