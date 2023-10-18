@@ -4,23 +4,43 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-function build {
-    echo "build task not implemented"
+
+function hello() {
+  # Comments are not shown in the help message
+  : "Say hello"  # But this pseudo-comment _is_ shown as the help text for the function
+  : "            Usage: hello [name]"
+  WHO="${1:-World}"
+  echo "Hello ${WHO}!"
 }
 
-function start {
-    echo "start task not implemented"
-}
+##
+# The functions below are utility functions that can be used in your Taskfile
+# Write your functions above these lines.
+##
 
-function default {
-    start
+function _parallel() {
+  # Run commands in parallel
+  # If any of the commands fail, the whole function exits
+  # with a non-zero exit code.
+  # Usage: _parallel "cmd1" "cmd2" "cmd3"
+
+  PIDS=()
+  for arg in "$@"; do
+      $arg &
+      PIDS+=($!)
+  done
+  for pid in ${PIDS[*]}; do
+      wait $pid
+  done
 }
 
 function help {
-    echo "$0 <task> <args>"
-    echo "Tasks:"
-    compgen -A function | cat -n
+  # This function prints the help message, automatically
+  # generated from the functions in this file
+  : "This help message"
+  compgen -A function | grep -vE "^_" | while read -r name ; do
+		paste <(printf '\033[36m%-15s\033[0m' "$name") <(type "$name" | sed -nEe 's/^[[:space:]]*: ?"(.*)";/\1/p')
+	done
 }
 
-TIMEFORMAT="Task completed in %3lR"
-time ${@:-default}
+"${@:-help}"  # Run the command, or print help by default
