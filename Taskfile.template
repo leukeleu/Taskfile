@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-function install {
-    echo "install task not implemented"
-}
+# Unofficial Bash Strict Mode; http://redsymbol.net/articles/unofficial-bash-strict-mode/
+set -euo pipefail
+IFS=$'\n\t'
 
 function build {
     echo "build task not implemented"
