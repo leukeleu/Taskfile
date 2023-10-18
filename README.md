@@ -28,13 +28,13 @@ function default {
 }
 
 function help {
-    echo "$0 <task> <args>"
-    echo "Tasks:"
-    compgen -A function | cat -n
+    : "This help message"
+    compgen -A function | grep -vE "^_" | while read -r name ; do
+        paste <(printf '\033[36m%-15s\033[0m' "$name") <(type "$name" | sed -nEe 's/^[[:space:]]*: ?"(.*)";/\1/p')
+    done
 }
 
-TIMEFORMAT="Task completed in %3lR"
-time ${@:-default}
+${@:-default}
 ```
 
 And to run a task:
@@ -46,13 +46,12 @@ And to run a task:
        Asset     Size  Chunks             Chunk Names
     index.js  1.96 MB       0  [emitted]  index
         + 353 hidden modules
-    Task completed in 0m5.008s
 
 ## Install
 To "install", add the following to your `.bashrc` or `.zshrc` (or `.whateverrc`):
 
     # Quick start with the default Taskfile template
-    alias run-init="curl -so Taskfile https://raw.githubusercontent.com/adriancooney/Taskfile/master/Taskfile.template && chmod +x Taskfile"
+    alias run-init="curl -so Taskfile https://raw.githubusercontent.com/leukeleu/Taskfile/main/Taskfile.template && chmod +x Taskfile"
     
     # Run your tasks like: run <task>
     alias run=./Taskfile
@@ -66,12 +65,8 @@ Open your directory and run `run-init` to add the default Taskfile template to y
 Open the `Taskfile` and add your tasks. To run tasks, use `run`:
 
     $ run help
-    ./Taskfile <task> <args>
-    Tasks:
-         1  build
-         2  build-all
-         3  help
-    Task completed in 0m0.005s
+    hello    Say hello
+    help     This help message
 
 ## Techniques
 ### Arguments
@@ -174,6 +169,17 @@ And execute the `build-all` task:
     built web
     built mobile
 
+**There is a caveat** with this approach. If any background task fails, the build-all task will still exit with a 0 exit code. To fix this, the template includes a helper function called `_parallel` that will run tasks in parallel and exit with the exit code of the first task to fail. You can use it like so:
+
+```sh
+function build-all {
+    _parallel "build web" "build mobile"
+}
+```
+
+```sh
+
+
 ### Default task
 To make a task the default task called when no arguments are passed, we can use bash’s default variable substitution `${VARNAME:-<default value>}` to return `default` if `$@` is empty. 
 
@@ -198,7 +204,7 @@ Now when we run `./Taskfile`, the `default` function is called.
 ### Runtime Statistics
 To add some nice runtime statistics like Gulp so you can keep an eye on build times, we use the built in `time` and pass if a formatter.
 
-```js
+```sh
 #!/bin/bash
 PATH=./node_modules/.bin:$PATH
 
@@ -222,17 +228,14 @@ And if we execute the `build` task:
     Task completed in 0m1.008s
 
 ### Help
-The final addition I recommend adding to your base Taskfile is the  task which emulates, in a much more basic fashion,  (with no arguments). It prints out usage and the available tasks in the Taskfile to show us what tasks we have available to ourself.
+The final addition I recommend adding to your base Taskfile is the `help` task which emulates, in a much more basic fashion,  (with no arguments). It prints out usage and the available tasks in the Taskfile to show us what tasks we have available to ourselves.
 
-The `compgen -A function` is a [bash builtin](https://www.gnu.org/software/bash/manual/html_node/Programmable-Completion-Builtins.html) that will list the functions in our Taskfile (i.e. tasks). This is what it looks like when we run the  task:
+The `compgen -A function` is a [bash builtin](https://www.gnu.org/software/bash/manual/html_node/Programmable-Completion-Builtins.html) that will list the functions in our Taskfile (i.e. tasks). This is what it looks like when we run the task:
 
     $ ./Taskfile help
-    ./Taskfile <task> <args>
-    Tasks:
-         1  build
-         2  default
-         3  help
-    Task completed in 0m0.005s
+    hello    Say hello
+    help     This help message
+
 
 ### `task:` namespace
 If you find you need to breakout some code into reusable functions that aren't tasks by themselves and don't want them cluttering your `help` output, you can introduce a namespace to your task functions. Bash is pretty lenient with it's function names so you could, for example, prefix a task function with  `task:`. Just remember to use that namespace when you're calling other tasks and in your `task:$@` entrypoint!
