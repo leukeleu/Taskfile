@@ -2,7 +2,7 @@
 This repository contains the default Taskfile template for getting started in your own projects. A Taskfile is a bash (or zsh etc.) script that follows a specific format. It's called `Taskfile`, sits in the root of your project (alongside your package.json) and contains the tasks to build your project.
 
 ```sh
-#!/bin/bash
+#!/usr/bin/env bash
 PATH=./node_modules/.bin:$PATH
 
 function install {
