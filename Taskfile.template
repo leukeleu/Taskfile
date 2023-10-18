@@ -8,9 +8,7 @@ IFS=$'\n\t'
 function hello() {
   # Comments are not shown in the help message
   : "Say hello"  # But this pseudo-comment _is_ shown as the help text for the function
-  : "            Usage: hello [name]"
-  WHO="${1:-World}"
-  echo "Hello ${WHO}!"
+  echo "Hello ${1:-World}!"
 }
 
 ##
