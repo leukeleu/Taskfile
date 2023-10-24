@@ -24,11 +24,11 @@ function _parallel {
 
   PIDS=()
   for arg in "$@"; do
-      $arg &
-      PIDS+=($!)
+    $arg &
+    PIDS+=($!)
   done
   for pid in "${PIDS[@]}"; do
-      wait "$pid"
+    wait "$pid"
   done
 }
 
@@ -36,9 +36,9 @@ function help {
   # This function prints the help message, automatically
   # generated from the functions in this file
   : "This help message"
-  compgen -A function | grep -vE "^_" | while read -r name ; do
-		paste <(printf '\033[36m%-15s\033[0m' "$name") <(type "$name" | sed -nEe 's/^[[:space:]]*: ?"(.*)";/\1/p')
-	done
+  compgen -A function | grep -vE "^_" | while read -r name; do
+    paste <(printf '\033[36m%-15s\033[0m' "$name") <(type "$name" | sed -nEe 's/^[[:space:]]*: ?"(.*)";/\1/p')
+  done
 }
 
-"${@:-help}"  # Run the command, or print help by default
+"${@:-help}" # Run the command, or print help by default
