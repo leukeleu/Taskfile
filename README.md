@@ -177,9 +177,6 @@ function build-all {
 }
 ```
 
-```sh
-
-
 ### Default task
 To make a task the default task called when no arguments are passed, we can use bash’s default variable substitution `${VARNAME:-<default value>}` to return `default` if `$@` is empty. 
 
