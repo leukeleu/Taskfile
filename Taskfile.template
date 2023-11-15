@@ -5,7 +5,7 @@ set -euo pipefail
 IFS=$' \n\t'
 
 
-function hello() {
+function hello {
   # Comments are not shown in the help message
   : "Say hello"  # But this pseudo-comment _is_ shown as the help text for the function
   echo "Hello ${1:-World}!"
@@ -16,7 +16,7 @@ function hello() {
 # Write your functions above these lines.
 ##
 
-function _parallel() {
+function _parallel {
   # Run commands in parallel
   # If any of the commands fail, the whole function exits
   # with a non-zero exit code.
